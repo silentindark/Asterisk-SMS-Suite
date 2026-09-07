@@ -2,7 +2,7 @@
 
 # TIFF tools utilizing paps, gs, convert, tiffset, Pillow (PIL) and more
 #
-# by Magnetic-Fox, 19.04.2025 - 06.01.2026
+# by Magnetic-Fox, 19.04.2025 - 07.09.2026
 #
 # (C)2025-2026 Bartłomiej "Magnetic-Fox" Węgrzyn
 
@@ -44,8 +44,8 @@ def imageDataToTIFF(imageData, pageWidth = 1728, marginLeft = 32, marginRight = 
 
 	# Below should give such result for resize (on default values): 1664x
 	convertCommand += ["-resize", str(pageWidth - marginLeft - marginRight) + "x"]
-	convertCommand += ["-background", "white", "-gravity", "northwest", "-splice", str(marginLeft) + "x0"]
-	convertCommand += ["-background", "white", "-gravity", "northeast", "-splice", str(marginRight) + "x0"]
+	convertCommand += ["-background", "white", "-alpha", "remove", "-gravity", "northwest", "-splice", str(marginLeft) + "x0"]
+	convertCommand += ["-background", "white", "-alpha", "remove", "-gravity", "northeast", "-splice", str(marginRight) + "x0"]
 	convertCommand += ["tiff:-"]
 
 	# Convert images to TIFFs with auto-size and auto-margin
@@ -268,9 +268,10 @@ def imageToG3TIFF(imageData, tiffFileName, resolution = 1, pageWidth = 1728, pag
 	# If image height is greater than chosen page height, then resize it and center (keep page width)
 	if height > pageHeight:
 		convertCommand = [	"convert", "-",
+					"-background", "white",
+					"-alpha", "remove",
 					"-resize", "x" + str(pageHeight),
 					"-gravity", "center",
-					"-background", "white",
 					"-extent", str(pageWidth) + "x",
 					"pnm:-"	]
 
@@ -279,7 +280,10 @@ def imageToG3TIFF(imageData, tiffFileName, resolution = 1, pageWidth = 1728, pag
 
 	# If image height is less or equal chosen page height, just convert it to the PNM format
 	else:
-		convertCommand = ["convert", "-", "pnm:-"]
+		convertCommand = [	"convert", "-",
+					"-background", "white",
+					"-alpha", "remove",
+					"pnm:-"	]
 		convert = subprocess.Popen(convertCommand, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
 		pnmData = convert.communicate(nonG3TIFFData)[0]
 
